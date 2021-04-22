@@ -1,52 +1,32 @@
-objects = auth.o ini.o filepath.o \
-	http.o http_parser.o krypton.o \
-	md5.o drcore.o html_parser.o \
-	gistregex.o cutils.o opener.o
-
 CC = gcc
 
-CFLAGS = -fno-rtti -fno-exceptions -Wl
+CFLAGS = -Os
 
-BUILD_TARGET = buildcache
+SRCS = $(wildcard *.c)
 
-all: clean build run
+BUILD_DIR = buildcache
 
-build: $(objects)
-	$(CC) $(CFLAGS) -o $(BUILD_TARGET)/drnet main.c $(objects)
+BUILD_BINFILE = drnet
 
-# ===================
+BUILD_RASP_BINFILE = drnet_rasp
 
-opener.o: opener.h
+OBJECTS = $(patsubst %.c, %.o, $(SRCS))
 
-cutils.o: cutils.h
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-gistregex.o: gistregex.h
+build: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$(BUILD_BINFILE) $(OBJECTS)
 
-drcore.o: drcore.h
-
-html_parser.o: html_parser.h
-
-md5.o: md5.h
-
-http.o: http.h
-
-http_parser.o: http_parser.h
-
-krypton.o: krypton.h
-
-auto.o: auth.h
-
-ini.o: ini.h
-
-filepath.o: filepath.h
-
-# ===================
-
-
-.PHONY: clean
+tar:
+	tar -zcvf dr.tar.gz *
 
 run:
-	./$(BUILD_TARGET)/drnet
+	./$(BUILD_DIR)/$(BUILD_BINFILE)
 
 clean:
-	rm -rf *.o $(BUILD_TARGET)/*
+	rm *.o $(BUILD_DIR)/*
+
+all: build
+
+.PHONY: clean tar

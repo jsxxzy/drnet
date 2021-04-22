@@ -54,3 +54,5 @@ dkms.conf
 cmake-build-debug
 buildcache
 *.html
+
+*.tar.gz
